@@ -1,0 +1,247 @@
+========================================================================================================================================
+
+NAME:
+
+         getConfValue - get configuration value
+
+SYNOPSIS:
+
+         from confparse import *
+         getConfValue(pathFile, confName)
+
+DESCRIPTION: 
+
+         Collect the value of attribute from the configuration file
+
+WHERE: 
+
+         pathFile: configuration file to be read
+         confName: the configuration name that you would like to know the value assigned
+
+RETURN VALUE: 
+
+         There are three possible returns
+         - The value of configuration
+         - confCommented (configuration commented)
+         - confNotFound (configuration not found)
+
+EXAMPLE: 
+
+         $ cat /etc/libvirt/libvirtd.conf | grep unix_sock_group
+         unix_sock_group = "libvirt"
+         $ cat example1.py
+
+         from confparse import *
+
+         LIBVIRT_CONFIG_FILE = "/etc/libvirt/libvirtd.conf"
+         value = getConf(LIBVIRT_CONFIG_FILE, "unix_sock_group")
+         print value
+
+         $ python example1.py
+         libvirt
+
+========================================================================================================================================
+
+NAME:
+
+         setConfValue - set configuration value
+
+SYNOPSIS:
+
+         from confparse import *
+         setConfValue(pathFile, confName, newValue, typeData)
+
+DESCRIPTION: 
+
+         setConfValue will read the original file and create a new config file replacing the config attribute specified. 
+         The previous config file will be available ~/.confparse/file_name.conf-CURRENT-DATE.
+    
+         Additional info:
+            If the config attribute that you changing is commented (#), the character (#) will be removed and set the new value. 
+            Finally, if you are writing a new item, it will be written in the end of file.
+
+WHERE: 
+
+         pathFile: configuration file to be read
+         confName: the configuration name that you would like to set
+         newValue: the value to be assigned to the configuration attribute
+         typeData: specify if you are recording string or not, please use one of below macro (CONF_STRING or CONF_NO_STRING).
+
+         Additional info: 
+                 CONF_NO_STRING - the confparse won't include " " between the value that you are setting.
+                 CONF_STRING - use for strings values, it will include " " between the value that you are setting.
+
+RETURN VALUE: 
+
+         On success zero (0) is returned
+
+EXAMPLE: 
+
+        from confparse import *
+
+        ret = setConfValue("/etc/libvirt/libvirtd.conf", "auth_unix_rw", "my-super-new-value", CONFSTRING)
+        if ret == 0:
+                print "success"
+
+        ret = setConfValue("/etc/libvirt/libvirtd.conf", "mdns_adv", "88888", CONFNUMBER)
+        if ret == 0:
+                print "success"
+
+========================================================================================================================================
+
+NAME:
+
+         confToDict - put the config file into memory to easy handle
+
+SYNOPSIS:
+
+         from confparse import *
+         confToDict(pathFile)
+
+DESCRIPTION: 
+
+         put the config file into memory. This function will create a dict variable with three members, the first member is the name of conf attribute
+         which will hold the attribute value. The second member is called "status", which will hold the status of the attribute (commented or activated). 
+         Finally, the last member is type meaning if the attribue is string or not.
+
+WHERE: 
+
+         pathFile: configuration file to be read
+
+RETURN VALUE: 
+
+         A dict filled with the conf attributes (name, value, type (includes "" between the value) and if it's commented or activated).
+
+EXAMPLE (1): reading values of tls_port and listen_tls
+
+         from confparse import *
+
+         mydict = {}
+         mydict = confToDict("/etc/libvirt/libvirtd.conf")
+
+         print mydict['tls_port']
+         print mydict['tls_type']
+         print mydict['tls_port_status']
+
+         print mydict['listen_tls']
+         print mydict['listen_type']
+         print mydict['listen_tls_status']
+
+EXAMPLE (2): Changing the value in memory
+
+         from confparse import *
+
+         mydict = {}
+
+         mydict = confToDict("/etc/libvirt/libvirtd.conf")
+
+         print "\ntls_port:"
+         print mydict['tls_port']
+         print mydict['tls_port_status']
+         print mydict['tls_port_type']
+
+         mydict['tls_port'] = "my-new-value"
+
+         print "\ntls_port after change:"
+         print mydict['tls_port']
+         print mydict['tls_port_status']
+         print mydict['tls_port_type']
+
+EXAMPLE (3): see all conf attributes of dict 
+
+         from confparse import *
+ 
+         mydict = {}
+
+         mydict = confToDict("/etc/libvirt/libvirtd.conf")
+
+         # loop into the dict variable to read all members
+         for item in sorted(set(mydict)):
+                 print "{0}, {1}".format(item, mydict[item])
+
+         # python example3.py
+         ==snip==
+         tls_port = 16514
+         tls_port_status = commented
+         tls_port_type = string
+         unix_sock_dir = /var/run/libvirt
+         unix_sock_dir_status = commented
+         unix_sock_dir_type = string
+         ==snip==
+
+========================================================================================================================================
+
+NAME:
+
+         getNumberOfElementsInMemory - read the number of elements in dict
+
+SYNOPSIS:
+
+         from confparse import *
+         getNumberOfElementsInMemory(var)
+
+DESCRIPTION: 
+
+         return the number of elements that confToDict() put inside memory
+
+WHERE: 
+
+         var: the dict variable returned by confToDict()
+
+RETURN VALUE: 
+
+         The number of config attributes available inside memory.
+
+EXAMPLE: 
+
+         from confparse import *
+
+         mydict = {}
+
+         mydict = confToDict("/etc/libvirt/libvirtd.conf")
+         print getNumberOfElementsInMemory(mydict)
+
+========================================================================================================================================
+
+NAME:
+
+         writeDictToFile - write the elements of dict into the .conf file
+
+SYNOPSIS:
+
+         from confparse import *
+         writeDictToFile(pathFile, var)
+
+DESCRIPTION: 
+
+         write the dict into the .conf file
+
+WHERE: 
+
+         var: the dict variable returned by confToDict()
+         pathFile: configuration file to be read
+
+RETURN VALUE: 
+
+         On success zero (0) is returned
+
+EXAMPLE: Uncomment attribute tls_port and change the value
+
+         # grep tls_port libvirtd.conf
+         #tls_port = "16514"
+
+         from confparse import *
+
+         mydict = {}
+         mydict = confToDict("/etc/libvirt/libvirtd.conf")
+         mydict['tls_port'] = "6667"
+         mydict['tls_port_status'] = "activated"
+         ret = writeDictToFile("/etc/libvirt/libvirtd.conf", mydict)
+         if (ret == 0):
+                 print "success!
+
+         # python example.py 
+         # grep tls_port libvirtd.conf 
+         tls_port = "6667"
+
+========================================================================================================================================
