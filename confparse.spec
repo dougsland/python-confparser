@@ -3,7 +3,7 @@
 Name:           confparse
 Version:        1.0.0
 Release:        2%{?dist}
-Summary:        A KISS parser to *nix config files
+Summary:        A KISS python module to parse *nix config files
 
 Group:          Development/Libraries
 License:        LGPLv2+
@@ -35,7 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README COPYING
 %{python_sitelib}/confparse.py*
-%{python_sitelib}/confparse-%{version}.py*.egg-info
+%{python_sitelib}/confparse-%{version}*.egg-info
 
 %changelog
 * Tue Jul 26 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-2
@@ -47,6 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 - Added COPYING to doc.
 - Fixed python_sitelib macro
 - Added python macro to all python entries
+- Improved Summary
 
 * Mon Jul 25 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0
 - Initial Commit
