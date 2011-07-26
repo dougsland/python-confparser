@@ -2,21 +2,17 @@
 
 Name:           confparse
 Version:        1.0.0
-Release:        1%{?dist}
-Summary:        confparse - A KISS parse to *nix config files
+Release:        2%{?dist}
+Summary:        A KISS parser to *nix config files
 
 Group:          Development/Libraries
-License:        GPLv2
+License:        LGPLv2+
 URL:            https://github.com/dougsland/confparse
 Source0:        https://github.com/dougsland/confparse/raw/master/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArchitectures: noarch
+BuildArch: noarch
 
-%if 0%{?fedora}
-BuildRequires: python-setuptools-devel
-%else
-BuildRequires: python-setuptools
-%endif      
+BuildRequires: python-devel, python-setuptools-devel
 
 %description
 Parser for *nix config files
@@ -25,7 +21,7 @@ Parser for *nix config files
 %setup -q
 
 %build
-python setup.py build
+%{__python} setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -37,9 +33,20 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README
-%{python_sitelib}/*
+%doc README COPYING
+%{python_sitelib}/confparse.py*
+%{python_sitelib}/confparse-%{version}.py*.egg-info
 
 %changelog
-* Sat Jul 25 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0
+* Tue Jul 26 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-2
+- Don't repeat the name in the summary.
+- Fixed BuildArchitectures is practically always written short as BuildArch.
+- Fixed License tag is incorrect, it should be LGPLv2+.
+- Added python-devel, which is required for python packages.
+- Fixed BuildRequires
+- Added COPYING to doc.
+- Fixed python_sitelib macro
+- Added python macro to all python entries
+
+* Mon Jul 25 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0
 - Initial Commit
