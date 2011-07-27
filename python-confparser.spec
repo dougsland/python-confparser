@@ -35,7 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README COPYING
 %{python_sitelib}/python-confparser.py*
-%{python_sitelib}/python-confparser-%{version}*.egg-info
+%{python_sitelib}/*.egg-info
 
 %changelog
 * Wed Jul 27 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-3
