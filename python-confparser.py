@@ -4,7 +4,7 @@
 #
 # Douglas Schilling Landgraf <dougsland@redhat.com>
 #
-# confparse - A KISS parse to *nix config files
+# python-confparser - A KISS python module to parse *nix config files
 #
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -27,8 +27,8 @@ import getpass
 import shutil
 import datetime
 
-# DEFATUL PATH to confparse
-CONFPARSE_PATH = "/" + getpass.getuser() + "/.confparse"
+# DEFAULT PATH to python-confparser
+CONFPARSE_PATH = "/" + getpass.getuser() + "/.python-confparser"
 
 # FORMAT TO WRITE
 CONF_STRING    = 0
@@ -100,11 +100,11 @@ def setConfValue(pathFile, confName, newValue, typeData):
 	CURRENT_FILE.close()
 	NEW_FILE.close()
 
-	# if confparse path doesn't exist, create the dir
+	# if python-confparser path doesn't exist, create the dir
 	if not os.path.exists(CONFPARSE_PATH):
 		os.mkdir(CONFPARSE_PATH)
 
-	# copying the old file to the .confparse dir
+	# copying the old file to the .python-confparser dir
 	now = datetime.datetime.now()
 	fname = pathFile.split('/')
 
@@ -235,11 +235,11 @@ def writeDictToFile(pathFile, var):
 
 	newConfFile = pathFile + ".new"
 
-	# if confparse path doesn't exist, create the dir
+	# if python-confparser path doesn't exist, create the dir
 	if not os.path.exists(CONFPARSE_PATH):
 		os.mkdir(CONFPARSE_PATH)
 
-	# copying the old file to the .confparse dir
+	# copying the old file to the .python-confparser dir
 	now = datetime.datetime.now()
 	fname = pathFile.split('/')
 
