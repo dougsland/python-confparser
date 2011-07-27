@@ -1,16 +1,16 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-Name:           confparse
+Name:           python-confparser
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A KISS python module to parse *nix config files
 
 Group:          Development/Libraries
 License:        LGPLv2+
-URL:            https://github.com/dougsland/confparse
-Source0:        https://github.com/dougsland/confparse/raw/master/%{name}-%{version}.tar.gz
+URL:            https://github.com/dougsland/python-confparser/wiki
+Source0:        https://github.com/dougsland/python-confparser/raw/master/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch: noarch
+BuildArch:      noarch
 
 BuildRequires: python-devel, python-setuptools-devel
 
@@ -34,10 +34,14 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc README COPYING
-%{python_sitelib}/confparse.py*
-%{python_sitelib}/confparse-%{version}*.egg-info
+%{python_sitelib}/python-confparser.py*
+%{python_sitelib}/python-confparser-%{version}*.egg-info
 
 %changelog
+* Wed Jul 27 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-3
+- Renamed project to confparser
+- Fixed the BuildArch space
+
 * Tue Jul 26 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-2
 - Don't repeat the name in the summary.
 - Fixed BuildArchitectures is practically always written short as BuildArch.
