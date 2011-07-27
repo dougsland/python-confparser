@@ -39,8 +39,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Wed Jul 27 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-3
-- Renamed project to confparser
+- Renamed project/module name to python-confparser
 - Fixed the BuildArch space
+- Fixed the spec to fit the new project/module name
 
 * Tue Jul 26 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-2
 - Don't repeat the name in the summary.
