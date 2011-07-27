@@ -6,7 +6,7 @@ NAME:
 
 SYNOPSIS:
 
-         from confparse import *
+         from confparser import *
          getConfValue(pathFile, confName)
 
 DESCRIPTION: 
@@ -31,10 +31,10 @@ EXAMPLE:
          unix_sock_group = "libvirt"
          $ cat example1.py
 
-         from confparse import *
+         from confparser import *
 
          LIBVIRT_CONFIG_FILE = "/etc/libvirt/libvirtd.conf"
-         value = getConf(LIBVIRT_CONFIG_FILE, "unix_sock_group")
+         value = getConfValue(LIBVIRT_CONFIG_FILE, "unix_sock_group")
          print value
 
          $ python example1.py
@@ -48,7 +48,7 @@ NAME:
 
 SYNOPSIS:
 
-         from confparse import *
+         from confparser import *
          setConfValue(pathFile, confName, newValue, typeData)
 
 DESCRIPTION: 
@@ -77,7 +77,7 @@ RETURN VALUE:
 
 EXAMPLE: 
 
-        from confparse import *
+        from confparser import *
 
         ret = setConfValue("/etc/libvirt/libvirtd.conf", "auth_unix_rw", "my-super-new-value", CONFSTRING)
         if ret == 0:
@@ -91,16 +91,16 @@ EXAMPLE:
 
 NAME:
 
-         confToDict - put the config file into memory to easy handle
+         confToDict - put the config file into dict to easy handle
 
 SYNOPSIS:
 
-         from confparse import *
+         from confparser import *
          confToDict(pathFile)
 
 DESCRIPTION: 
 
-         put the config file into memory. This function will create a dict variable with three members, the first member is the name of conf attribute
+         put the config file into dict. This function will create a dict variable with three members, the first member is the name of conf attribute
          which will hold the attribute value. The second member is called "status", which will hold the status of the attribute (commented or activated). 
          Finally, the last member is type meaning if the attribue is string or not.
 
@@ -114,7 +114,7 @@ RETURN VALUE:
 
 EXAMPLE (1): reading values of tls_port and listen_tls
 
-         from confparse import *
+         from confparser import *
 
          mydict = {}
          mydict = confToDict("/etc/libvirt/libvirtd.conf")
@@ -127,9 +127,9 @@ EXAMPLE (1): reading values of tls_port and listen_tls
          print mydict['listen_type']
          print mydict['listen_tls_status']
 
-EXAMPLE (2): Changing the value in memory
+EXAMPLE (2): Changing the value in dict
 
-         from confparse import *
+         from confparser import *
 
          mydict = {}
 
@@ -149,7 +149,7 @@ EXAMPLE (2): Changing the value in memory
 
 EXAMPLE (3): see all conf attributes of dict 
 
-         from confparse import *
+         from confparser import *
  
          mydict = {}
 
@@ -173,16 +173,16 @@ EXAMPLE (3): see all conf attributes of dict
 
 NAME:
 
-         getNumberOfElementsInMemory - read the number of elements in dict
+         getNumberOfElementsInDict - read the number of elements in dict
 
 SYNOPSIS:
 
-         from confparse import *
-         getNumberOfElementsInMemory(var)
+         from confparser import *
+         getNumberOfElementsInDict(var)
 
 DESCRIPTION: 
 
-         return the number of elements that confToDict() put inside memory
+         return the number of elements that confToDict() put inside dict
 
 WHERE: 
 
@@ -190,16 +190,16 @@ WHERE:
 
 RETURN VALUE: 
 
-         The number of config attributes available inside memory.
+         The number of config attributes available inside dict.
 
 EXAMPLE: 
 
-         from confparse import *
+         from confparser import *
 
          mydict = {}
 
          mydict = confToDict("/etc/libvirt/libvirtd.conf")
-         print getNumberOfElementsInMemory(mydict)
+         print getNumberOfElementsInDict(mydict)
 
 ========================================================================================================================================
 
@@ -209,7 +209,7 @@ NAME:
 
 SYNOPSIS:
 
-         from confparse import *
+         from confparser import *
          writeDictToFile(pathFile, var)
 
 DESCRIPTION: 
@@ -230,7 +230,7 @@ EXAMPLE: Uncomment attribute tls_port and change the value
          # grep tls_port libvirtd.conf
          #tls_port = "16514"
 
-         from confparse import *
+         from confparser import *
 
          mydict = {}
          mydict = confToDict("/etc/libvirt/libvirtd.conf")
