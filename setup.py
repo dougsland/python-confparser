@@ -1,14 +1,14 @@
 from distutils.core import setup
 
-setup(name='python-confparse', version='1.0.0',
+setup(name='python-confparser', version='1.0.0',
       description='Parser for *nix config files',
       author='Douglas Schilling Landgraf',
       author_email='dougsland@redhat.com',
-      url='https://github.com/dougsland/python-confparse',
+      url='https://github.com/dougsland/python-confparser/wiki',
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: Developers',
-          'License :: GPLv2',
+          'License :: LGPLv2+',
           'Programming Language :: Python',
           ],
       license= 'LGPLv2+' ,
