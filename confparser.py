@@ -228,7 +228,7 @@ def confToDict(pathFile):
 
 	return var
 
-def getNumberOfElementsInMemory(var):
+def getNumberOfElementsInDict(var):
 	return len(var)
 
 def writeDictToFile(pathFile, var):
