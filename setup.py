@@ -12,6 +12,6 @@ setup(name='python-confparser', version='1.0.0',
           'Programming Language :: Python',
           ],
       license= 'LGPLv2+' ,
-      py_modules = ['python-confparse']   
+      py_modules = ['python-confparser']   
            
 )
