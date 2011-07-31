@@ -175,6 +175,7 @@ def confToDict(pathFile):
 		confValue      = ""
 		confStatus     = ""
 		typeAttribute  = "NoAttr"
+		quoteCount     = 0
 
         	line = FILE.readline()
 		ret = line.find("=")
@@ -203,10 +204,15 @@ def confToDict(pathFile):
 			for i in range(0, sizeString):
 				if (confValue[i] == "\""):
 					typeAttribute = "string"
+					quoteCount += 1
 					continue
 
 				if (confValue[i] == " ") or (confValue[i] == "\n"):
 					continue
+
+				if quoteCount == 2:
+					quotCount = 0
+					break
 
 				cleanConfValue += confValue[i]
 
