@@ -2,7 +2,7 @@
 
 Name:           python-confparser
 Version:        1.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A KISS python module to parse *nix config files
 
 Group:          Development/Libraries
@@ -12,7 +12,11 @@ Source0:        https://github.com/dougsland/python-confparser/raw/master/%{name
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 
+%if (0%{?fedora} > 12 || 0%{?rhel} > 5)
 BuildRequires: python-devel, python-setuptools-devel
+%else
+BuildRequires: python-devel, python-setuptools
+%endif
 
 %description
 Parser for *nix config files
@@ -35,9 +39,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README COPYING
 %{python_sitelib}/confparser.py*
+%if (0%{?fedora} > 12 || 0%{?rhel} > 5)
 %{python_sitelib}/*.egg-info
+%endif
 
 %changelog
+* Wed Jul 27 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-4
+- Fixed EPEL5 compilation
+
 * Wed Jul 27 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-3
 - Renamed project/module name to python-confparser
 - Fixed the BuildArch space
