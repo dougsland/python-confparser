@@ -245,3 +245,28 @@ EXAMPLE: Uncomment attribute tls_port and change the value
          tls_port = "6667"
 
 ========================================================================================================================================
+
+NAME:
+
+         getConfparserVersion - return the current release of module
+
+SYNOPSIS:
+
+         from confparser import *
+         getConfparserVersion()
+
+DESCRIPTION: 
+
+         return the current release
+
+RETURN VALUE: 
+
+         string which contains the release value
+
+EXAMPLE
+
+        from confparser import *
+
+        print getConfparserVersion()
+
+========================================================================================================================================
