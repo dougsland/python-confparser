@@ -207,8 +207,16 @@ def confToDict(pathFile):
 					quoteCount += 1
 					continue
 
-				if (confValue[i] == " ") or (confValue[i] == "\n"):
-					continue
+				# removing space from numbers
+				if not typeAttribute == "string":
+					if (confValue[i] == " ") or (confValue[i] == "\n"):
+						continue
+
+					if confValue[i] == "#":
+						break
+				else:
+					if confValue[i] == "\n":
+						continue
 
 				if quoteCount == 2:
 					quotCount = 0
