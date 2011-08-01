@@ -33,7 +33,7 @@ CONFPARSE_PATH = "/" + getpass.getuser() + "/.python-confparser"
 # FORMAT TO WRITE
 CONF_STRING    = 0
 CONF_NO_STRING = 1
-VERSION	       = "1.0.0"
+VERSION	       = "1.0.1"
 
 def setConfValue(pathFile, confName, newValue, typeData):
 
