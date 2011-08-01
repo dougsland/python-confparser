@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-setup(name='python-confparser', version='1.0.0',
+setup(name='python-confparser', version='1.0.1',
       description='Parser for *nix config files',
       author='Douglas Schilling Landgraf',
       author_email='dougsland@redhat.com',
