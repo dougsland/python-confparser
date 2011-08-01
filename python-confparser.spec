@@ -1,8 +1,8 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           python-confparser
-Version:        1.0.0
-Release:        4%{?dist}
+Version:        1.0.1
+Release:        5%{?dist}
 Summary:        A KISS python module to parse *nix config files
 
 Group:          Development/Libraries
@@ -37,13 +37,22 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README COPYING
+%doc README COPYING INFO
 %{python_sitelib}/confparser.py*
 %if (0%{?fedora} > 12 || 0%{?rhel} > 5)
 %{python_sitelib}/*.egg-info
 %endif
 
 %changelog
+* Mon Aug 1 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-5
+- Increased release 
+- Added INFO to the doc 
+- FIX: Do not include comments into the conf atrtribute value. Let's return
+just the read value
+- FIX: Remove comments from number config attributes
+- NEW: Add getConfparserVersion() - return the release version of confparser
+module
+
 * Wed Jul 27 2011 Douglas Schilling Landgraf <dougsland@redhat.com> 1.0.0-4
 - Fixed EPEL5 compilation
 
