@@ -28,7 +28,7 @@ import shutil
 import datetime
 
 # DEFAULT PATH to python-confparser
-CONFPARSE_PATH = "/" + getpass.getuser() + "/.python-confparser"
+CONFPARSE_PATH = "/home/" + getpass.getuser() + "/.python-confparser"
 
 # FORMAT TO WRITE
 CONF_STRING    = 0
@@ -325,15 +325,15 @@ def writeDictToFile(pathFile, var):
 
 			# DEBUG
 			"""
-			#if (cleanConfName == "name_attribute_here"):
+			if (cleanConfName == "name_attribute_here"):
 				print "line[0] " + line[0]
 				print "cleanConfName: "   + cleanConfName
 				print "cleanConfValue: "  + cleanConfValue
 				print "dict: confName: "  + confName
-				print "linetype: "        + lineType
-				print "dict: Type: "      + AttrType      # string or no string
-				print "dict: Commented: " + AttrCommented # commented or activated
-				print "dict: Value: "     + AttrValue + "\n"
+				print "lineType: "        + lineType
+				print "dict: AttrType: "      + AttrType      # string or no string
+				print "dict: AttrCommented: " + AttrCommented # commented or activated
+				print "dict: AttrValue: "     + AttrValue + "\n"
 			"""
 
 			# if the current file contain the attribute commented and the 
@@ -371,7 +371,7 @@ def writeDictToFile(pathFile, var):
 				elif (AttrCommented == "activated" and AttrType == "no string"):
 					NEW_FILE.write("{0} = {1}\n".format(cleanConfName, AttrValue))
 				elif (AttrCommented == "activated" and AttrType == "string"):
-					NEW_FILE.write("#{0} = \"{1}\"\n".format(cleanConfName, AttrValue))
+					NEW_FILE.write("{0} = \"{1}\"\n".format(cleanConfName, AttrValue))
 			
 			# No changes, just write the line
 			else:
