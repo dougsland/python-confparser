@@ -31,97 +31,99 @@ import datetime
 CONFPARSE_PATH = "/home/" + getpass.getuser() + "/.python-confparser"
 
 # FORMAT TO WRITE
-CONFSTRING     = 0
-CONF_STRING    = 0
+CONFSTRING = 0
+CONF_STRING = 0
 CONF_NO_STRING = 1
 CONF_NOT_STRING = 1
-CONFNUMBER     = 2
-VERSION	       = "1.0.2"
+CONFNUMBER = 2
+VERSION = "1.0.2"
+
 
 def setConfValue(pathFile, confName, newValue, typeData):
+    retSetConf = ""
+    found = -1
+    newConfFile = pathFile + ".new"
 
-	retSetConf = ""
-	found = -1
-	newConfFile = pathFile + ".new"
+    try:
+        CURRENT_FILE = open(pathFile, 'r')
+    except IOError, reason:
+        print "cannot find config file: {0}\n{1}".format(pathFile, reason)
+        sys.exit(-1)
 
-	try:
-		CURRENT_FILE = open(pathFile, 'r')
-	except IOError, reason:
-		print "cannot find configuration file: {0}\n{1}".format(pathFile, reason)
-		sys.exit(-1)
+    try:
+        NEW_FILE = open(newConfFile, 'w')
+    except IOError, reason:
+        print "cannot create config file: {0}\n{1}".format(pathFile, reason)
+        sys.exit(-1)
 
-	try:
-		NEW_FILE = open(newConfFile, 'w')
-	except IOError, reason:
-		print "cannot create new configuration file: {0}\n{1}".format(pathFile, reason)
-		sys.exit(-1)
-
-	while True:
-        	line = CURRENT_FILE.readline()
-		ret = line.find(confName)
-		if ret != -1:
-			# Writing the new value
-			if (typeData == CONF_NO_STRING) or (typeData == CONFNUMBER) \
+    while True:
+        line = CURRENT_FILE.readline()
+        ret = line.find(confName)
+        if ret != -1:
+            # Writing the new value
+            if (typeData == CONF_NO_STRING) or (typeData == CONFNUMBER) \
                     or (typeData == CONF_NO_STRING):
-				# DO NOT include " " 
-				NEW_FILE.write("{0} = {1}".format(confName, newValue))
-				NEW_FILE.write("\n")
+                # DO NOT include " "
+                NEW_FILE.write("{0} = {1}".format(confName, newValue))
+                NEW_FILE.write("\n")
+            # special entry - put between the " other caracter
+            else:
+                # Writing string - including " "
+                NEW_FILE.write("{0} = \"{1}\"".format(confName, newValue))
+                NEW_FILE.write("\n")
 
-			# special entry - put between the " other caracter
-			else:
-				# Writing string - including " " 
-				NEW_FILE.write("{0} = \"{1}\"".format(confName, newValue))
-				NEW_FILE.write("\n")
+            # finish the job
+            # raising flags retSetConf = 0 (OK) and found = 0 (OK)
+            retSetConf = 0
+            found = 0
+        else:
+            NEW_FILE.write(line)
+        # len = 0 - No more lines to read (EOF)
+        if len(line) == 0:
+            break
 
-			# finish the job - raising flags retSetConf = 0 (OK) and found = 0 (OK)
-			retSetConf = 0
-			found = 0
-		else:
-		        NEW_FILE.write(line)
+    # The configuration not found? return the string "confNotFound"
+    if (retSetConf == "" and (found == -1)):
+        # Writing the new value
+        if (typeData == CONFNUMBER):
+            # Writing number DO NOT INCLUDE " "
+            NEW_FILE.write("{0} = {1}".format(confName, newValue))
+            NEW_FILE.write("\n")
 
-		# len = 0 - No more lines to read (EOF)
-	        if len(line) == 0:
-        	        break
+        # special entry - put between the " other caracter
+        else:
+            # Writing string - including " "
+            NEW_FILE.write("{0} = \"{1}\"".format(confName, newValue))
+            NEW_FILE.write("\n")
 
-	# The configuration not found? return the string "confNotFound"
-	if (retSetConf == "" and (found == -1)):
-		# Writing the new value
-		if (typeData == CONFNUMBER):
-			# Writing number DO NOT INCLUDE " "
-			NEW_FILE.write("{0} = {1}".format(confName, newValue))
-			NEW_FILE.write("\n")
+        # finish the job - raising flags retSetConf = 0 (OK) and found = 0 (OK)
+        retSetConf = 0
+        found = 0
 
-		# special entry - put between the " other caracter
-		else:
-			# Writing string - including " " 
-			NEW_FILE.write("{0} = \"{1}\"".format(confName, newValue))
-			NEW_FILE.write("\n")
+    CURRENT_FILE.close()
+    NEW_FILE.close()
 
-		# finish the job - raising flags retSetConf = 0 (OK) and found = 0 (OK)
-		retSetConf = 0
-		found = 0
+    # if python-confparser path doesn't exist, create the dir
+    if not os.path.exists(CONFPARSE_PATH):
+        os.mkdir(CONFPARSE_PATH)
 
-	CURRENT_FILE.close()
-	NEW_FILE.close()
+    # copying the old file to the .python-confparser dir
+    now = datetime.datetime.now()
+    fname = pathFile.split('/')
 
-	# if python-confparser path doesn't exist, create the dir
-	if not os.path.exists(CONFPARSE_PATH):
-		os.mkdir(CONFPARSE_PATH)
+    # fname [-1] = last item of list (name of file)
+    shutil.copy(pathFile, (
+        CONFPARSE_PATH + "/" + fname[-1] + "-" + now.strftime(
+            "%Y-%m-%d_%H-%M")))
 
-	# copying the old file to the .python-confparser dir
-	now = datetime.datetime.now()
-	fname = pathFile.split('/')
+    # removing the previous file
+    os.remove(pathFile)
 
-	# fname [-1] = last item of list (name of file)
-	shutil.copy(pathFile, (CONFPARSE_PATH + "/" + fname[-1] + "-" + now.strftime("%Y-%m-%d_%H-%M")))
+    # renaming the current config
+    shutil.move(newConfFile, pathFile)
 
-	# removing the previous file
-	os.remove(pathFile)
+    return retSetConf
 
-	# renaming the current config 
-	shutil.move(newConfFile, pathFile)
-
-	return retSetConf
 
 def getConfValue(pathFile, confName):
 
@@ -131,7 +133,7 @@ def getConfValue(pathFile, confName):
     try:
         FILE = open(pathFile).readlines()
     except IOError, reason:
-        print "cannot locate configuration file: %s" %pathFile
+        print "cannot locate configuration file: %s" % pathFile
         sys.exit(-1)
 
     for line in [l.strip() for l in FILE]:
@@ -147,7 +149,8 @@ def getConfValue(pathFile, confName):
                 confValue = ""
                 sizeString = len(line)
                 indexEqual = line.index('=')
-                indexEqual += 1 # Get next caracter from =
+                indexEqual += 1  # Get next caracter from =
+
                 for i in range(indexEqual, sizeString):
                     if (line[i] == "\"") or (line[i] == " "):
                         continue
@@ -161,6 +164,7 @@ def getConfValue(pathFile, confName):
 
     return confValue
 
+
 def confToDict(pathFile):
 
     var = {}
@@ -168,18 +172,19 @@ def confToDict(pathFile):
     try:
         FILE = open(pathFile, 'r+')
     except IOError, reason:
-        print "cannot find configuration file: {0}\n{1}".format(pathFile, reason)
+        print "cannot find configuration" \
+            "file: {0}\n{1}".format(pathFile, reason)
         sys.exit(-1)
 
     while True:
 
         # cleaning variables
         cleanConfValue = ""
-        cleanConfName  = ""
-        confName       = ""
-        confValue      = ""
-        confStatus     = ""
-        typeAttribute  = "NoAttr"
+        cleanConfName = ""
+        confName = ""
+        confValue = ""
+        confStatus = ""
+        typeAttribute = "NoAttr"
 
         line = FILE.readline()
         ret = line.find("=")
@@ -188,14 +193,14 @@ def confToDict(pathFile):
                 confStatus = "commented"
             else:
                 confStatus = "activated"
-		
+
             conf = line.split('=')
 
             # conf[0] = confName - conf[1] = confValue
-            confName  = conf[0]
+            confName = conf[0]
             confValue = conf[1]
 
-            # Cleaning the confName 
+            # Cleaning the confName
             sizeString = len(conf[0])
             for i in range(0, sizeString):
                 if (confName[i] == "#") or (confName[i] == "\n"):
@@ -219,7 +224,8 @@ def confToDict(pathFile):
                 """
                 # removing space from numbers
                 if not typeAttribute == "string":
-                    if (confValue[i] == " ") or (confValue[i] == "\n") or (confValue[i] == "\""):
+                    if (confValue[i] == " ") or
+                           (confValue[i] == "\n") or (confValue[i] == "\""):
                         continue
 
                     if confValue[i] == "#":
@@ -235,14 +241,15 @@ def confToDict(pathFile):
             if typeAttribute == "NoAttr":
                 typeAttribute = "no string"
 
-            # DOUG
             #print cleanConfValue
             #print typeAttribute
             # appending to the dict
             #print "->1" + cleanConfName
             #print "->2" + cleanConfValue
-            u = {cleanConfName.strip():cleanConfValue, (cleanConfName.strip() + '_status'):confStatus,
-                (cleanConfName.strip() + '_type'):typeAttribute, (cleanConfName.strip() + '_key'):cleanConfName}
+            u = {cleanConfName.strip(): cleanConfValue, (
+                cleanConfName.strip() + '_status'): confStatus,
+                (cleanConfName.strip() + '_type'): typeAttribute,
+                (cleanConfName.strip() + '_key'): cleanConfName}
 
             #print u
             var.update(u)
@@ -255,16 +262,20 @@ def confToDict(pathFile):
     FILE.close()
     return var
 
+
 def getNumberOfElementsInDict(var):
     # multiple of 4, since we create for each element three
     # additional keys (type and status)
-	return len(var.keys()) / 4
+    return len(var.keys()) / 4
+
 
 def getConfParserVersion():
     return getConfparserVersion()
 
+
 def getConfparserVersion():
-	return VERSION
+    return VERSION
+
 
 def writeDictToFile(pathFile, var):
     newConfFile = pathFile + ".new"
@@ -278,41 +289,45 @@ def writeDictToFile(pathFile, var):
     fname = pathFile.split('/')
 
     # fname [-1] = last item of list (name of file)
-    shutil.copy(pathFile, (CONFPARSE_PATH + "/" + fname[-1] + "-" + now.strftime("%Y-%m-%d_%H-%M")))
+    shutil.copy(pathFile, (
+        CONFPARSE_PATH + "/" + fname[-1] + "-" + now.strftime(
+            "%Y-%m-%d_%H-%M")))
 
     try:
         CURRENT_FILE = open(pathFile, 'r')
     except IOError, reason:
-        print "cannot find configuration file: {0}\n{1}".format(pathFile, reason)
+        print "cannot find configuration" \
+            " file: {0}\n{1}".format(pathFile, reason)
         sys.exit(-1)
 
     try:
         NEW_FILE = open(newConfFile, 'w')
     except IOError, reason:
-        print "cannot create new configuration file: {0}\n{1}".format(pathFile, reason)
+        print "cannot create new configuration" \
+            "file: {0}\n{1}".format(pathFile, reason)
         sys.exit(-1)
 
     while True:
-        AttrCommented  = False
-        confName       = ""
-        confValue      = ""
-        cleanConfName  = ""
+        AttrCommented = False
+        confName = ""
+        confValue = ""
+        cleanConfName = ""
         cleanConfValue = ""
-        lineType       = ""
+        lineType = ""
 
         line = CURRENT_FILE.readline()
         ret = line.find("=")
         if ret != -1:
             conf = line.split('=')
-            confName  = conf[0]
+            confName = conf[0]
             confValue = conf[1]
 
-            
             # Cleaning the confName
             sizeString = len(conf[0])
             #print sizeString
             for i in range(0, sizeString):
-                if (confName[i] == "#") or (confName[i] == " ") or (confName[i] == "\n"):
+                if (confName[i] == "#") or (confName[i] == " ") or (
+                        confName[i] == "\n"):
                     continue
                 cleanConfName += confName[i]
 
@@ -323,7 +338,8 @@ def writeDictToFile(pathFile, var):
                     lineType = "string"
                     continue
 
-                if (confValue[i] == "#") or (confValue[i] == " ") or (confValue[i] == "\n"):
+                if (confValue[i] == "#") or (
+                        confValue[i] == " ") or (confValue[i] == "\n"):
                     continue
                 cleanConfValue += confValue[i]
                 print cleanConfValue
@@ -331,16 +347,16 @@ def writeDictToFile(pathFile, var):
             if lineType != "string":
                 lineType = "no string"
 
-            # Setting members of dict	
-            dictType      = cleanConfName + "_type"
-            dictStatus    = cleanConfName + "_status"
-            dictKey       = cleanConfName + "_key"
+            # Setting members of dict
+            dictType = cleanConfName + "_type"
+            dictStatus = cleanConfName + "_status"
+            dictKey = cleanConfName + "_key"
 
-            # Getting the values from dict 
+            # Getting the values from dict
             # var.get(mydict_from_argument)
-            AttrType      = var.get(dictType)
+            AttrType = var.get(dictType)
             AttrCommented = var.get(dictStatus)
-            AttrValue     = var.get(cleanConfName)
+            AttrValue = var.get(cleanConfName)
 
             cleanConfName = var.get(dictKey)
 
@@ -352,48 +368,70 @@ def writeDictToFile(pathFile, var):
                 print "cleanConfValue: "  + cleanConfValue
                 print "dict: confName: "  + confName
                 print "lineType: "        + lineType
-                print "dict: AttrType: "      + AttrType      # string or no string
-                print "dict: AttrCommented: " + AttrCommented # commented or activated
+                print "dict: AttrType: "      + AttrType
+                # string or no string
+                print "dict: AttrCommented: " + AttrCommented
+                # commented or activated
                 print "dict: AttrValue: "     + AttrValue + "\n"
             """
 
-            # if the current file contain the attribute commented and the 
+            # if the current file contain the attribute commented and the
             # dict says it's activated - let's remove the comment
             if (line[0] == "#") and (AttrCommented == "activated"):
                 if AttrType == "string":
-                    NEW_FILE.write("{0} = \"{1}\"\n".format(cleanConfName, AttrValue))
+                    NEW_FILE.write("{0} = \"{1}\"\n".format(
+                        cleanConfName, AttrValue))
                 else:
-                    NEW_FILE.write("{0} = {1}\n".format(cleanConfName, AttrValue))
-			
-            # if the attritbute in the current file is not commented and the dict
-            # status changed to commented - let's comment the attribute into the .conf
+                    NEW_FILE.write("{0} = {1}\n".format(
+                        cleanConfName, AttrValue))
+
+            # if the attritbute in the current file is not
+            # commented and the dict
+            # status changed to commented - let's comment
+            # the attribute into the .conf
             elif (line[0] != "#") and (AttrCommented == "commented"):
                 if AttrType == "string":
-                    NEW_FILE.write("#{0}={1}\n".format(cleanConfName, AttrValue))
+                    NEW_FILE.write("#{0}={1}\n".format(
+                        cleanConfName, AttrValue))
                 else:
-                    NEW_FILE.write("#{0}={1}\n".format(cleanConfName, AttrValue))
+                    NEW_FILE.write("#{0}={1}\n".format(
+                        cleanConfName, AttrValue))
 
-            elif (lineType == "string") and (AttrType == "no string") or (AttrType == "string") and (lineType == "no string"):
+            elif (lineType == "string") and (
+                    AttrType == "no string") or (AttrType == "string") and (
+                    lineType == "no string"):
                 if (AttrType == "string") and (AttrCommented == "activated"):
-                    NEW_FILE.write("{0}={1}\n".format(cleanConfName, AttrValue))
-                elif (AttrType == "string") and (AttrCommented == "commented"):
-                    NEW_FILE.write("#{0}={1}\n".format(cleanConfName, AttrValue))
-                elif (AttrType == "no string") and (AttrCommented == "activated"):
-                    NEW_FILE.write("{0}={1}\n".format(cleanConfName, AttrValue))
-                elif (AttrType == "no string") and (AttrCommented == "commented"):
-                    NEW_FILE.write("#{0}={1}\n".format(cleanConfName, AttrValue))
+                    NEW_FILE.write("{0}={1}\n".format(
+                        cleanConfName, AttrValue))
+                elif (AttrType == "string") and (
+                        AttrCommented == "commented"):
+                    NEW_FILE.write("#{0}={1}\n".format(
+                        cleanConfName, AttrValue))
+                elif (AttrType == "no string") and (
+                        AttrCommented == "activated"):
+                    NEW_FILE.write("{0}={1}\n".format(
+                        cleanConfName, AttrValue))
+                elif (AttrType == "no string") and (
+                        AttrCommented == "commented"):
+                    NEW_FILE.write("#{0}={1}\n".format(
+                        cleanConfName, AttrValue))
 
-            # validation if the value changes 
+            # validation if the value changes
             elif (cleanConfValue != AttrValue):
                 if (AttrCommented == "commented" and AttrType == "string"):
-                    NEW_FILE.write("#{0}={1}\n".format(cleanConfName, AttrValue))
-                elif (AttrCommented == "commented" and AttrType == "no string"):
-                    NEW_FILE.write("#{0}={1}\n".format(cleanConfName, AttrValue))
-                elif (AttrCommented == "activated" and AttrType == "no string"):
-                    NEW_FILE.write("{0}={1}\n".format(cleanConfName, AttrValue))
+                    NEW_FILE.write("#{0}={1}\n".format(
+                        cleanConfName, AttrValue))
+                elif (AttrCommented == "commented"
+                        and AttrType == "no string"):
+                    NEW_FILE.write("#{0}={1}\n".format(
+                        cleanConfName, AttrValue))
+                elif (AttrCommented == "activated"
+                        and AttrType == "no string"):
+                    NEW_FILE.write("{0}={1}\n".format(
+                        cleanConfName, AttrValue))
                 elif (AttrCommented == "activated" and AttrType == "string"):
-                    NEW_FILE.write("{0}={1}\n".format(cleanConfName, AttrValue))
-			
+                    NEW_FILE.write("{0}={1}\n".format(
+                        cleanConfName, AttrValue))
             # No changes, just write the line
             else:
                 NEW_FILE.write("{0}".format(line))
@@ -401,7 +439,7 @@ def writeDictToFile(pathFile, var):
         # No equal symbol found in the line, let's write the line
         else:
             NEW_FILE.write("{0}".format(line))
-			
+
         # len = 0 - No more lines to read (EOF)
         if len(line) == 0:
             break
@@ -412,7 +450,7 @@ def writeDictToFile(pathFile, var):
     # removing the previous file
     os.remove(pathFile)
 
-    # renaming the current config 
+    # renaming the current config
     shutil.move(newConfFile, pathFile)
 
     return 0
