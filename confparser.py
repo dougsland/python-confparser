@@ -265,7 +265,7 @@ def confToDict(pathFile):
 
 def getNumberOfElementsInDict(var):
     # multiple of 4, since we create for each element three
-    # additional keys (type and status)
+    # additional keys (type, key, status)
     return len(var.keys()) / 4
 
 

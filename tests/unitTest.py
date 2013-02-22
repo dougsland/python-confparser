@@ -106,7 +106,7 @@ class confParseTests(unittest.TestCase):
         print "Testing setConfValue - Setting notnumber [OK]"
         ##########################################################
 
-    def test_cofToDict(self):
+    def test_confToDict(self):
         mydict = {}
         mydict = confToDict(LIBVIRT_CONFIG_FILE)
 
@@ -121,9 +121,10 @@ class confParseTests(unittest.TestCase):
         print "dict - created [OK]"
         print "tls_ports %s [OK]" % mydict['tls_port']
         print "tls_port_status %s [OK]" % mydict['tls_port_status']
-        print "tls_port_status %s [OK]" % mydict['tls_port_type']
+        print "tls_port_type %s [OK]" % mydict['tls_port_type']
+        print "tls_port_key %s [OK]" % mydict['tls_port_key']
 
-        if getNumberOfElementsInDict(mydict) != 41:
+        if getNumberOfElementsInDict(mydict) != 40:
             assert()
         
         print "getNumberOfElementsInDict [OK]"
